@@ -1,0 +1,365 @@
+{
+  "dns": {
+    "fakeip": {
+      "enabled": true,
+      "inet4_range": "198.18.0.0/15",
+      "inet6_range": "fc00::/18"
+    },
+    "servers": [
+      {
+        "tag": "google",
+        "address": "https://8.8.8.8/dns-query",
+        "detour": "proxy"
+      },
+      {
+        "tag": "tx",
+        "address": "https://120.53.53.53/dns-query",
+        "detour": "direct"
+      },
+      {
+        "tag": "fakeip",
+        "address": "fakeip"
+      }
+    ],
+    "rules": [
+      {
+        "outbound": "any",
+        "server": "tx",
+        "disable_cache": true
+      },
+      {
+        "clash_mode": "Direct",
+        "server": "tx"
+      },
+      {
+        "clash_mode": "Global",
+        "server": "fakeip"
+      },
+      {
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "server": "fakeip",
+        "rewrite_ttl": 1
+      },
+      {
+        "rule_set": "geosite-cn",
+        "server": "tx"
+      }
+    ],
+    "final": "google",
+    "independent_cache": true
+  },
+  "route": {
+    "rules": [
+      {
+        "port": 53,
+        "outbound": "dns-out"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "Direct",
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "Global",
+        "outbound": "GLOBAL"
+      },
+      {
+        "rule_set": "bahamut",
+        "outbound": "bahamut"
+      },
+      {
+        "rule_set": "xda",
+        "outbound": "xda"
+      },
+      {
+        "rule_set": "bahamut",
+        "outbound": "bahamut"
+      },
+      {
+        "rule_set": "bahamut",
+        "outbound": "bahamut"
+      },
+      {
+        "rule_set": [
+          "geoip-telegram",
+          "geosite-telegram"
+        ],
+        "outbound": "telegram"
+      },
+      {
+        "rule_set": [
+          "geoip-cn",
+          "geosite-cn"
+        ],
+        "outbound": "cn"
+      },
+      {
+        "rule_set": "geolocation-!cn",
+        "outbound": "proxy"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "bahamut",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geosite/bahamut.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geolocation-!cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-telegram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geoip/telegram.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "microsoft",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/microsoft.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "cnki",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/cnki.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "xda",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/xda.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "instagram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/sing/geo/geosite/instagram.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-telegram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geosite/telegram.srs",
+        "download_detour": "direct"
+      }
+    ],
+    "final": "final",
+    "auto_detect_interface": true
+  },
+  "outbounds": [
+    {
+      "tag": "proxy",
+      "type": "selector",
+      "outbounds": [
+        "hk",
+        "tw",
+        "jp",
+        "sg",
+        "us",
+        "自建香港",
+        "自建美国",
+        "自建日本",
+        "自建新加坡"
+      ]
+    },
+    {
+      "tag": "自建香港",
+      "type": "selector",
+      "outbounds": [
+        "香港ss81"
+      ]
+    },
+    {
+      "tag": "自建美国",
+      "type": "selector",
+      "outbounds": [
+        "美国ss81",
+        "美国akile"
+      ]
+    },
+        {
+      "tag": "自建日本",
+      "type": "selector",
+      "outbounds": [
+        "日本ss"
+      ]
+    },
+        {
+      "tag": "自建新加坡",
+      "type": "selector",
+      "outbounds": [
+        "新加坡ss"
+      ]
+    },
+    {
+      "tag": "telegram",
+      "type": "selector",
+      "outbounds": [
+        "香港ss81",
+        "美国ss81",
+        "美国akile",
+        "新加坡ss",
+        "日本ss"
+      ],
+      "default": "新加坡ss"
+    },
+    {
+      "tag": "bahamut",
+      "type": "selector",
+      "outbounds": [
+        "香港ss81",
+        "美国ss81",
+        "美国akile",
+        "新加坡ss",
+        "日本ss"
+      ],
+      "default": "香港ss81"
+    },
+    {
+      "tag": "cn",
+      "type": "selector",
+      "outbounds": [
+        "direct"
+      ],
+      "default": "direct"
+    },
+    {
+      "tag": "final",
+      "type": "selector",
+      "outbounds": [
+        "香港ss81",
+        "美国ss81",
+        "美国akile",
+        "新加坡ss",
+        "日本ss"
+      ],
+      "default": "美国akile"
+    },
+    {
+      "tag": "hk",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "tw",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "jp",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "sg",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "us",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "all",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "GLOBAL",
+      "type": "selector",
+      "outbounds": [
+        "direct",
+        "proxy",
+        "hk",
+        "tw",
+        "jp",
+        "sg",
+        "us",
+        "all"
+      ],
+      "default": "direct"
+    },
+    {
+      "tag": "direct",
+      "type": "direct"
+    },
+    {
+      "tag": "dns-out",
+      "type": "dns"
+    }
+  ],
+  "inbounds": [
+    {
+      "type": "tun",
+      "inet4_address": "172.19.0.0/30",
+      "inet6_address": "fdfe:dcba:9876::0/126",
+      "stack": "system",
+      "auto_route": true,
+      "sniff": true,
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 7890
+        }
+      }
+    },
+    {
+      "type": "mixed",
+      "listen": "127.0.0.1",
+      "listen_port": 7890,
+      "sniff": true
+    }
+  ],
+  "experimental": {
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
+      "external_ui_download_detour": "proxy"
+    },
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": true
+    }
+  },
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "timestamp": true
+  }
+}
